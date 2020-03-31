@@ -31,18 +31,15 @@ public class RotateObject : MonoBehaviour
     public Transform cameraObject;
 
     public float mouseSensitivity;
-    //For radial distance of camera and object
-   
+  
+
     //For loading mouse x and mouse y values
     public float currentX = 0.0f;
     public float currentY = 0.0f;
 
-    //    public static Vector3 dir;
     public Vector3 direction;
     public Quaternion rotation;
-    public Vector3 OldPos;
-    public Vector3 intialCameraPosition;
-    public Vector3 intialProductPosition;
+
     float scrollValue;
     float currentFOV;
     public float minFOV;
@@ -52,7 +49,7 @@ public class RotateObject : MonoBehaviour
     public bool cameraRotationX, cameraRotationY;
 
 
-    public GameObject product;
+    public GameObject room;
     public Vector3 newCameraPosition;
 
     void Start()
@@ -74,7 +71,7 @@ public class RotateObject : MonoBehaviour
     }
 
 
-   //Drag in Update
+    //Drag in Update
     void DragInUpdate()
     {
 
@@ -121,73 +118,31 @@ public class RotateObject : MonoBehaviour
         {
 
             rotation = Quaternion.Euler(currentY, currentX, 0);
-            newCameraPosition = (product.transform.position) + rotation * direction;
+            float distance = Vector3.Distance(transform.position, room.transform.position);
+            direction = new Vector3(0, 0, -distance);
+            newCameraPosition = (room.transform.position) + rotation * direction;
             cameraObject.position = new Vector3(newCameraPosition.x, newCameraPosition.y, newCameraPosition.z);
-            cameraObject.LookAt(product.transform.position);
+            cameraObject.LookAt(room.transform.position);
         }
     }
 
     //  Zoom in and out scroll wheel
-      void ZoomInOut()
-        {
-            currentFOV = cameraObject.gameObject.GetComponent<Camera>().fieldOfView;
-            currentFOV = Mathf.Clamp(currentFOV,minFOV,maxFOV);
-            scrollValue = Input.GetAxis("Mouse ScrollWheel");
+    void ZoomInOut()
+    {
+        currentFOV = cameraObject.gameObject.GetComponent<Camera>().fieldOfView;
+        currentFOV = Mathf.Clamp(currentFOV, minFOV, maxFOV);
+        scrollValue = Input.GetAxis("Mouse ScrollWheel");
 
-            if(scrollValue > 0 )
-            {
-                currentFOV += (scrollValue * scrollSensitivity);
-                cameraObject.gameObject.GetComponent<Camera>().fieldOfView = currentFOV;
-            }
-            if( scrollValue < 0)
-            {
-               currentFOV += (scrollValue * scrollSensitivity);
-                cameraObject.gameObject.GetComponent<Camera>().fieldOfView = currentFOV;
-            }
+        if (scrollValue > 0)
+        {
+            currentFOV += (scrollValue * scrollSensitivity);
+            cameraObject.gameObject.GetComponent<Camera>().fieldOfView = currentFOV;
         }
+        if (scrollValue < 0)
+        {
+            currentFOV += (scrollValue * scrollSensitivity);
+            cameraObject.gameObject.GetComponent<Camera>().fieldOfView = currentFOV;
+        }
+    }
 
 }
-
-//     //Fit to the screen
-//     public void FitToScreen()
-//     {
-//          distance  = Vector3.Distance(ProductHandlerManager.Instance.product.transform.position + ProductHandlerManager.Instance.product.GetComponent<BoxCollider>().center,cameraObject.position);
-//         direction = new Vector3(0,0,-distance);
-//         Vector3 boundScale = ProductHandlerManager.Instance.product.GetComponent<BoxCollider>().size;
-
-
-//         bounds = new Bounds(Recentre(ProductHandlerManager.Instance.product.transform.position,ProductHandlerManager.Instance.product.GetComponent<BoxCollider>().center),boundScale * scaleOfFitObject);
-//         cameraObject.transform.position = new Vector3(-bounds.max.x,bounds.max.y,-bounds.max.z);
-//         cameraObject.LookAt(ProductHandlerManager.Instance.product.transform.position + ProductHandlerManager.Instance.product.GetComponent<BoxCollider>().center);
-
-//         distance  = Vector3.Distance(ProductHandlerManager.Instance.product.transform.position + ProductHandlerManager.Instance.product.GetComponent<BoxCollider>().center,cameraObject.position);
-//         direction = new Vector3(0,0,-distance);
-//         ManageOrbitRoam.Instance.cameraIntialPosition = new Vector3(cameraObject.transform.position.x,cameraObject.transform.position.y,cameraObject.transform.position.z);
-//         ManageOrbitRoam.Instance.cameraIntialEulerAngles = new Vector3(cameraObject.transform.eulerAngles.x,cameraObject.transform.eulerAngles.y,cameraObject.transform.eulerAngles.z);
-
-
-
-//     }
-
-//     Vector3 Recentre(Vector3 _centreOfProduct,Vector3 _centreOfGravity)
-//     {
-//         return new Vector3((_centreOfProduct.x + _centreOfGravity.x),(_centreOfProduct.y + _centreOfGravity.y),(_centreOfProduct.z + _centreOfGravity.z));
-//     }
-//     //Zoom in and out scroll wheel
-//       void ZoomInOut()
-//         {
-//             currentFOV = cameraObject.gameObject.GetComponent<Camera>().fieldOfView;
-//             currentFOV = Mathf.Clamp(currentFOV,minFOV,maxFOV);
-//             scrollValue = Input.GetAxis("Mouse ScrollWheel");
-
-//             if(scrollValue > 0 )
-//             {
-//                 currentFOV += (scrollValue * scrollSensitivity);
-//                 cameraObject.gameObject.GetComponent<Camera>().fieldOfView = currentFOV;
-//             }
-//             if( scrollValue < 0)
-//             {
-//                currentFOV += (scrollValue * scrollSensitivity);
-//                 cameraObject.gameObject.GetComponent<Camera>().fieldOfView = currentFOV;
-//             }
-//         }
