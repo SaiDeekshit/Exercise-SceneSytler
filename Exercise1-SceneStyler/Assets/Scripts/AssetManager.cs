@@ -76,6 +76,7 @@ public class AssetManager : MonoBehaviour
         Destroy(CurrentAsset.gameObject);
         isSpin.interactable = false;
         deleteButton.interactable = false;
+        duplicateButton.interactable = false;
     }
     public void DuplicateAsset()
     {
