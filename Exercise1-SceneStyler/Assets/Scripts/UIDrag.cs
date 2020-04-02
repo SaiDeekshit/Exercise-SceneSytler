@@ -3,30 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
+//This class is used for dragging UI to floor,wall or ceiling to instiante respective asset
 public class UIDrag : MonoBehaviour, IDragHandler, IDropHandler, IEndDragHandler
 {
     public AssetBundle myLoadedAssetBundle;
-   
+
     public void OnDrag(PointerEventData eventData)
     {
-       
+
         this.transform.position = Input.mousePosition;
     }
     public void OnDrop(PointerEventData eventData)
     {
-        if(CameraRayCast.Instance.hit.transform != null){
-        if (CameraRayCast.Instance.hit.transform.tag == this.tag)
+        if (CameraRayCast.Instance.hit.transform != null)
         {
+            if (CameraRayCast.Instance.hit.transform.tag == this.tag)
+            {
 
-            GameObject asset = Instantiate(GetAssetModel());
-            asset.AddComponent<RefrenceAssetDrag>();
-            asset.AddComponent<BoxCollider>();
-            asset.transform.position = GetPosition(asset);
-            asset.GetComponent<Renderer>().material.color = this.GetComponent<Image>().color;
+                GameObject asset = Instantiate(GetAssetModel());
+                asset.AddComponent<RefrenceAssetDrag>();
+                asset.AddComponent<BoxCollider>();
+                asset.transform.position = GetPosition(asset);
+                asset.GetComponent<Renderer>().material.color = this.GetComponent<Image>().color;
 
-            myLoadedAssetBundle.Unload(false);
-        }
+                myLoadedAssetBundle.Unload(false);
+            }
         }
     }
     public void OnEndDrag(PointerEventData eventData)
@@ -36,6 +37,7 @@ public class UIDrag : MonoBehaviour, IDragHandler, IDropHandler, IEndDragHandler
     }
 
     Vector3 loadPosition;
+    //GetPosition for dropping asset while dragging UI
     Vector3 GetPosition(GameObject asset)
     {
 
@@ -61,7 +63,7 @@ public class UIDrag : MonoBehaviour, IDragHandler, IDropHandler, IEndDragHandler
                         break;
                     case 90:
                         loadPosition = new Vector3(CameraRayCast.Instance.hit.point.x, CameraRayCast.Instance.hit.point.y, CameraRayCast.Instance.hit.transform.position.z - (asset.GetComponent<Collider>().bounds.size.z));
-                        
+
                         break;
                     case 180:
                         loadPosition = new Vector3(CameraRayCast.Instance.hit.transform.position.x - (asset.GetComponent<Collider>().bounds.size.x), CameraRayCast.Instance.hit.point.y, CameraRayCast.Instance.hit.point.z);
@@ -80,8 +82,8 @@ public class UIDrag : MonoBehaviour, IDragHandler, IDropHandler, IEndDragHandler
 
         }
         asset.tag = CameraRayCast.Instance.hit.transform.tag + "Asset";
-       asset.GetComponent<RefrenceAssetDrag>().plane2D = GetPlaneMomentValues(CameraRayCast.Instance.hit.transform.gameObject,asset);
-        
+        asset.GetComponent<RefrenceAssetDrag>().plane2D = GetPlaneMomentValues(CameraRayCast.Instance.hit.transform.gameObject, asset);
+
         return loadPosition;
     }
     GameObject loadGameobject;
@@ -122,34 +124,35 @@ public class UIDrag : MonoBehaviour, IDragHandler, IDropHandler, IEndDragHandler
         // myLoadedAssetBundle.Unload(false);
         return prefab;
     }
-    Plane GetPlaneMomentValues(GameObject plane,GameObject asset)
+    //Generates plane limits for assets to move in there respective plane
+    Plane GetPlaneMomentValues(GameObject plane, GameObject asset)
     {
         Vector3 values = plane.transform.localScale;
         Plane newPlane = new Plane();
         if (values.x > values.y && values.z > values.y)
         {
             // Debug.Log("y is smallest");
-            newPlane.minimumX = - plane.transform.localScale.x / 2 + (asset.GetComponent<Collider>().bounds.size.x/2);
-            newPlane.maximumX =  plane.transform.localScale.x / 2 - (asset.GetComponent<Collider>().bounds.size.x/2);
-            newPlane.minimumZ = - plane.transform.localScale.z / 2 + (asset.GetComponent<Collider>().bounds.size.z/2);
-            newPlane.maximumZ =  plane.transform.localScale.z / 2 - (asset.GetComponent<Collider>().bounds.size.z/2);
-            
+            newPlane.minimumX = -plane.transform.localScale.x / 2 + (asset.GetComponent<Collider>().bounds.size.x / 2);
+            newPlane.maximumX = plane.transform.localScale.x / 2 - (asset.GetComponent<Collider>().bounds.size.x / 2);
+            newPlane.minimumZ = -plane.transform.localScale.z / 2 + (asset.GetComponent<Collider>().bounds.size.z / 2);
+            newPlane.maximumZ = plane.transform.localScale.z / 2 - (asset.GetComponent<Collider>().bounds.size.z / 2);
+
         }
         if (values.x > values.z && values.y > values.z)
         {
             // Debug.Log("z is smallest");
-            newPlane.minimumX = - plane.transform.localScale.x / 2 + (asset.GetComponent<Collider>().bounds.size.x/2);
-            newPlane.maximumX =  plane.transform.localScale.x / 2 - (asset.GetComponent<Collider>().bounds.size.x/2);
-            newPlane.minimumY = - plane.transform.localScale.y / 2 + (asset.GetComponent<Collider>().bounds.size.y/2);
-            newPlane.maximumY =  plane.transform.localScale.y / 2 - (asset.GetComponent<Collider>().bounds.size.y/2);
+            newPlane.minimumX = -plane.transform.localScale.x / 2 + (asset.GetComponent<Collider>().bounds.size.x / 2);
+            newPlane.maximumX = plane.transform.localScale.x / 2 - (asset.GetComponent<Collider>().bounds.size.x / 2);
+            newPlane.minimumY = -plane.transform.localScale.y / 2 + (asset.GetComponent<Collider>().bounds.size.y / 2);
+            newPlane.maximumY = plane.transform.localScale.y / 2 - (asset.GetComponent<Collider>().bounds.size.y / 2);
         }
         if (values.y > values.x && values.z > values.x)
         {
             // Debug.Log("x is smallest " + plane.transform.localScale.z);
-            newPlane.minimumY = - plane.transform.localScale.y / 2 + (asset.GetComponent<Collider>().bounds.size.y/2);
-            newPlane.maximumY =  plane.transform.localScale.y / 2 - (asset.GetComponent<Collider>().bounds.size.y/2);
-            newPlane.minimumZ = - plane.transform.localScale.z / 2 + (asset.GetComponent<Collider>().bounds.size.z);
-            newPlane.maximumZ =  plane.transform.localScale.z / 2;
+            newPlane.minimumY = -plane.transform.localScale.y / 2 + (asset.GetComponent<Collider>().bounds.size.y / 2);
+            newPlane.maximumY = plane.transform.localScale.y / 2 - (asset.GetComponent<Collider>().bounds.size.y / 2);
+            newPlane.minimumZ = -plane.transform.localScale.z / 2 + (asset.GetComponent<Collider>().bounds.size.z);
+            newPlane.maximumZ = plane.transform.localScale.z / 2;
         }
         return newPlane;
     }

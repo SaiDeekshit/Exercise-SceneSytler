@@ -70,8 +70,7 @@ public class AssetManager : MonoBehaviour
         }
     }
     public void DeleteAsset()
-    {
-        
+    { 
         DeleteAssetFromAsset(CurrentAsset.gameObject);
         Destroy(CurrentAsset.gameObject);
         isSpin.interactable = false;

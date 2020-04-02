@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//This class is attached to camera for camera is rotating around object
+//This class is attached to camera for camera is rotating around Room
 public class RotateObject : MonoBehaviour
 {
     private static RotateObject _instance;
