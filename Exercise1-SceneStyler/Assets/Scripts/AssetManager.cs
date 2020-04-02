@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AssetManager : MonoBehaviour
 {
@@ -30,14 +31,13 @@ public class AssetManager : MonoBehaviour
         }
         set
         {
-           
-            if (currentAsset != null)
-            {
-                // Debug.Log("currentAsset " + currentAsset);
-                // currentAsset.OnDeSelection();
-            }
+
             currentAsset = value;
-            // currentCategory.OnSelection();
+            isSpin.interactable = true;
+            isSpin.isOn = currentAsset.isSpin;
+            deleteButton.interactable = true;
+            duplicateButton.interactable = true;
+
         }
     }
     void OnEnable()
@@ -48,11 +48,82 @@ public class AssetManager : MonoBehaviour
     {
         AssetSelectionEvent.onAssetSelection -= SetCurrentAsset;
     }
-    public GameObject canvasPrefab;
-    public GameObject spherePrefab;
+    public Toggle isSpin;
+    public float mouseSensitivity;
+    public GameObject temporaryParent;
+    public Button deleteButton;
+    public Button duplicateButton;
+    void Start()
+    {
+        temporaryParent = new GameObject("TemporaryParent");
+    }
     //Method is used for load into delegate
     void SetCurrentAsset(RefrenceAssetDrag asset)
     {
         CurrentAsset = asset;
     }
+    public void UpdateIsSpin()
+    {
+        if (CurrentAsset != null)
+        {
+            CurrentAsset.isSpin = isSpin.isOn;
+        }
+    }
+    public void DeleteAsset()
+    {
+        
+        DeleteAssetFromAsset(CurrentAsset.gameObject);
+        Destroy(CurrentAsset.gameObject);
+        isSpin.interactable = false;
+        deleteButton.interactable = false;
+    }
+    public void DuplicateAsset()
+    {
+        GameObject duplicateAsset = GameObject.Instantiate(CurrentAsset.gameObject);
+        duplicateAsset.GetComponent<RefrenceAssetDrag>().plane2D = CurrentAsset.gameObject.GetComponent<RefrenceAssetDrag>().plane2D;
+        AddToListOfAsset(duplicateAsset);
+    }
+    void AddToListOfAsset(GameObject duplicatedAsset)
+    {
+        switch (duplicatedAsset.tag)
+        {
+            case "CeilingAsset":
+                ListOfAssets.Instance.listOfCeilingAssets.Add(duplicatedAsset);
+                ListOfAssets.Instance.displayCeilingCount.text = ListOfAssets.Instance.listOfCeilingAssets.Count.ToString();
+
+                break;
+            case "WallAsset":
+                ListOfAssets.Instance.listOfWallAssets.Add(duplicatedAsset);
+                ListOfAssets.Instance.displayWallCount.text = ListOfAssets.Instance.listOfWallAssets.Count.ToString();
+                
+                break;
+            case "FloorAsset":
+                ListOfAssets.Instance.listOfFloorAssets.Add(duplicatedAsset);
+                ListOfAssets.Instance.displayFloorCount.text = ListOfAssets.Instance.listOfFloorAssets.Count.ToString();
+                break;
+
+        }
+    }
+    void DeleteAssetFromAsset(GameObject asset)
+    {
+        switch (asset.tag)
+        {
+            case "CeilingAsset":
+                ListOfAssets.Instance.listOfCeilingAssets.Remove(asset);
+                ListOfAssets.Instance.displayCeilingCount.text = ListOfAssets.Instance.listOfCeilingAssets.Count.ToString();
+
+                break;
+            case "WallAsset":
+                ListOfAssets.Instance.listOfWallAssets.Remove(asset);
+                ListOfAssets.Instance.displayWallCount.text = ListOfAssets.Instance.listOfWallAssets.Count.ToString();
+                
+                break;
+            case "FloorAsset":
+                ListOfAssets.Instance.listOfFloorAssets.Remove(asset);
+                ListOfAssets.Instance.displayFloorCount.text = ListOfAssets.Instance.listOfFloorAssets.Count.ToString();
+                break;
+
+        }
+    }
+    
 }
