@@ -7,6 +7,9 @@ TagManager:
   - Ceiling
   - Wall
   - Floor
+  - CeilingAsset
+  - WallAsset
+  - FloorAsset
   layers:
   - Default
   - TransparentFX
